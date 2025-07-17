@@ -1,6 +1,6 @@
 /**
  * @file request.h
- * @brief Defines the Request class for handling simulation requests
+ * @brief Contains the definition of the Request class for network traffic simulation
  */
 
 #ifndef REQUEST_H
@@ -14,107 +14,140 @@ using std::ostream;
 using std::move;
 
 /**
- * @brief Represents a request with IP information and duration.
+ * @brief Models a network request in the load balancing system
+ * 
+ * This class simulates a network request by tracking its source and 
+ * destination addresses, processing requirements, and completion status.
+ * Each request is assigned a unique identifier for tracking purposes.
  */
 class Request {
 private:
     /**
-     * @brief The incoming IP address.
+     * @brief Source address of the network request
+     * 
+     * Represents the originating IP address in standard IPv4 format
      */
     string ipIn;
 
     /**
-     * @brief The outgoing IP address.
+     * @brief Destination address for the network request
+     * 
+     * Represents the target IP address in standard IPv4 format
      */
     string ipOut;
 
     /**
-     * @brief The duration of the request in seconds
+     * @brief Time required to process this request
+     * 
+     * Measured in simulation time units (cycles). This value determines
+     * how long a server needs to handle the request.
      */
     size_t duration;
 
     /**
-     * @brief Static counter for unique request IDs
+     * @brief Global counter for generating unique request identifiers
+     * 
+     * Increments each time a new request is created to ensure unique IDs
      */
     static size_t next_id;
 
     /**
-     * @brief The unique identifier for this request
+     * @brief Unique identifier assigned to this request instance
+     * 
+     * Generated automatically during construction using next_id
      */
     size_t id;
 
     /**
-     * @brief Flag indicating if request is completed
+     * @brief Tracks whether this request has been fully processed
+     * 
+     * Set to true when processing is complete, false while pending or in progress
      */
     bool completed;
 
 public:
     /**
-     * @brief Default constructor for Request.
+     * @brief Initializes a request with default values
+     * 
+     * Creates an empty request with:
+     * - Empty source and destination addresses
+     * - Zero duration
+     * - New unique ID
+     * - Not completed status
      */
-    Request() : ipIn{string{}}, ipOut{string{}}, duration{0}, id{next_id++}, completed{false} {}
+    Request();
 
     /**
-     * @brief Parameterized constructor for Request.
-     * @param ipIn The incoming IP address.
-     * @param ipOut The outgoing IP address.
-     * @param duration The duration of the request in seconds.
+     * @brief Creates a fully specified request
+     * 
+     * @param ipIn Source IP address of the request
+     * @param ipOut Destination IP address of the request
+     * @param duration Number of cycles needed to process this request
+     * 
+     * Initializes a request with provided network parameters and automatically
+     * assigns a unique identifier
      */
-    Request(const string& ipIn, const string& ipOut, size_t duration) 
-        : ipIn{ipIn}, ipOut{ipOut}, duration{duration}, id{next_id++}, completed{false} {}
+    Request(const string& ipIn, const string& ipOut, size_t duration);
 
     /**
-     * @brief Get the duration of the request.
-     * @return A constant reference to the duration.
+     * @brief Retrieves the processing time requirement
+     * 
+     * @return Number of cycles needed to complete this request
+     * 
+     * This value is used by servers to determine how long they need to
+     * process the request before completion
      */
-    const size_t& getDuration() const {
-        return this->duration;
-    }
+    const size_t& getDuration() const;
 
     /**
-     * @brief Get the ID of the request.
-     * @return The request's unique identifier.
+     * @brief Retrieves the request's unique identifier
+     * 
+     * @return The unique ID assigned to this request
+     * 
+     * Used for tracking and logging purposes throughout the system
      */
-    size_t getId() const {
-        return this->id;
-    }
+    size_t getId() const;
 
     /**
-     * @brief Get the processing time of the request.
-     * @return The request's duration.
+     * @brief Gets the total processing time needed
+     * 
+     * @return Number of cycles required for completion
+     * 
+     * Provides the time requirement for resource allocation planning
      */
-    size_t getProcessTime() const {
-        return this->duration;
-    }
+    size_t getProcessTime() const;
 
     /**
-     * @brief Check if the request is completed.
-     * @return True if completed, false otherwise.
+     * @brief Checks the request's completion status
+     * 
+     * @return true if request processing is finished, false otherwise
+     * 
+     * Used to track request progress through the system
      */
-    bool isCompleted() const {
-        return this->completed;
-    }
+    bool isCompleted() const;
 
     /**
-     * @brief Mark the request as completed.
+     * @brief Updates the request status to completed
+     * 
+     * Called by servers when they finish processing the request
+     * to update its status in the system
      */
-    void complete() {
-        this->completed = true;
-    }
+    void complete();
 
     /**
-     * @brief Overload the << operator to display the Request object as a string.
-     * @param os The output stream.
-     * @param request The Request object to display.
-     * @return The output stream with the Request object representation.
+     * @brief Formats the request details for output
+     * 
+     * @param os The output stream to write to
+     * @param request The request object to format
+     * @return Reference to the output stream
+     * 
+     * Creates a human-readable representation showing:
+     * - Request ID
+     * - Source IP
+     * - Destination IP
+     * - Processing duration
      */
-    friend ostream& operator<<(ostream& os, const Request& request) {
-        os << "Request #" << request.id 
-           << " From:" << request.ipIn 
-           << " ➜ " << request.ipOut 
-           << " Duration: " << request.duration;
-        return os;
-    } 
+    friend ostream& operator<<(ostream& os, const Request& request);
 };
 
 #endif // REQUEST_H

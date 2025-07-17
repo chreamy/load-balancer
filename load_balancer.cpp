@@ -13,7 +13,7 @@ size_t LoadBalancer::random(size_t min, size_t max) {
     return min + rand() % (max - min + 1);
 }
 
-string LoadBalancer::generate_IP() {
+string LoadBalancer::generateIP() {
     return std::to_string(random(1, 255)) + "." + 
            std::to_string(random(0, 255)) + "." + 
            std::to_string(random(0, 255)) + "." + 
@@ -24,7 +24,7 @@ string LoadBalancer::generate_IP() {
 void LoadBalancer::generateRequests(size_t num_requests, ostream* os) {
     size_t num_generated = 0;
     for (size_t i = 0; i < num_requests; ++i) {
-        Request request{generate_IP(), generate_IP(), random(2, 16)};
+        Request request{generateIP(), generateIP(), random(2, 16)};
         requests.push(request);
         ++num_generated;
     }
@@ -59,6 +59,7 @@ void LoadBalancer::run(ostream& os) {
         string cycle_str = std::to_string(this->clock);
         
         os << "\n┌─ CYCLE " << cycle_str << "\n";
+        os << "│ Requests in queue: " << this->requests.size() << "\n";
         
         // Process current servers
         for (Server& server : this->servers) {
@@ -101,9 +102,10 @@ void LoadBalancer::run(ostream& os) {
 
 void LoadBalancer::printLog(ostream& os) const {
     os << "\n╔════════════════ FINAL STATS ═══════════════╗\n";
-    os << "║ Total requests processed: " << handled.size() << "\n";
-    os << "║ Average requests per cycle: " << (float)handled.size() / runtime << "\n";
+    os << "║ Total requests receive: " << handled.size() << "\n";
+    os << "║ Total requests processed: " << handled.size()-requests.size() << "\n";
+    os << "║ Average requests per cycle: " << (float)(handled.size()-requests.size()) / runtime << "\n";
     os << "║ Final server count: " << servers.size() << "\n";
-    os << "║ Requests in queue: " << requests.size() << "\n";
-    os << "╚═════════════════════════════════════════════╝\n";
+    os << "║ Requests in queue (rejected): " << requests.size() << "\n";
+    os << "╚════════════════════════════════════════════╝\n";
 } 

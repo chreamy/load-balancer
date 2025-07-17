@@ -48,7 +48,7 @@ private:
      * @brief Generate a random IP address string
      * @return Random IP address in format "xxx.xxx.xxx.xxx"
      */
-    string generate_IP();
+    string generateIP();
 
     /**
      * @brief Generate a specified number of random requests
